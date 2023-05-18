@@ -27,23 +27,28 @@ export default function () {
         nlQuery: string;
         sqlQuery: string;
     }[]>([]);
+    
     const chartConfigs = ref<ChartConfiguration[]>([]);
 
     const isLoading = ref(false);
+    const hasStarted = ref(false);
+    const isLoadingCharts = ref(false);
 
     async function generateDashboard() {
         try {
             isLoading.value = true;
+            hasStarted.value = true;
 
+            /** NATURAL LANGUAGE QUERIES */
             const { queries } = await client.runChain<typeof nlQueryGenerator>('nl-query-generator',{
                 tableName: TABLE_NAME,
                 tableColumns: TABLE_COLUMNS,
-                amountToGenerate: 6,
-                ignoreQuestions: []
+                amountToGenerate: 10,
             });
 
             naturalLanguageQueries.value = queries;
 
+            /** SQL QUERIES */
             for (const query of naturalLanguageQueries.value) {
                 try {
                     const { sqlQuery } = await client.runChain<typeof sqlQueryGenerator>('sql-query-generator',{
@@ -58,6 +63,10 @@ export default function () {
                 });
                 } catch (e) {}
             }
+
+                        
+            /** LOAD CHARTS */
+            isLoadingCharts.value = true;
 
             async function generateChart({
                 sqlQuery,
@@ -95,12 +104,11 @@ export default function () {
             };
 
             const promises = sqlQueries.value.map(generateChart);
-
             const settledPromises = await Promise.allSettled(promises);
 
             const brokenJson = [] as string[];
             
-            chartConfigs.value = settledPromises.map((promise) => {
+            let charts = settledPromises.map((promise) => {
                 try {
                     if (promise.status === 'rejected') {
                         return {} as ChartConfiguration;
@@ -131,21 +139,27 @@ export default function () {
             // poorly received follow up album
             const settledBrokenPromises = await Promise.allSettled(brokenPromises);
 
-            settledBrokenPromises.forEach(result => {
+            chartConfigs.value = [...charts, ...settledBrokenPromises.map(result => {
                 if (result.status === 'fulfilled') {
-                    chartConfigs.value.push(result.value);
+                    return result.value;
                 };
-            })
+
+                return null;
+            }).filter(r => !!r)];
+            
         } catch (error) {
             console.log('request error', error)
             console.log(error);
         } finally {
             isLoading.value = false;
+            isLoadingCharts.value = false;
         }
     }
 
     return {
+        hasStarted,
         isLoading,
+        isLoadingCharts,
         naturalLanguageQueries: staggeredUiQueries,
         sqlQueries,
         chartConfigs,
