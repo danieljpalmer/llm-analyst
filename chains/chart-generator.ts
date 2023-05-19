@@ -171,8 +171,8 @@ ${exampleCode}
       
 Here is some data: ${results}.
       
-Create a chartjs.org chart of type ${typeOfChart} that would be appropriate for this data. Create a valid ChartJS config for this chart. Only return the valid JSON config. Don't use more than 5 colours. Make sure to avoid this error: Give the chart a relevant title, based on this title: ${naturalLanguageQuery}. Include a key in the config called "original_query" that contains: ${naturalLanguageQuery}. Include a key called "summary" that includes a summary of the findings of the data, relative to the original query. It should summarise the results. Don't say "The chart show" in your summary.`,
-      system_prompt: 'You are a ChartJS config creator. You must only return valid JSON. Never provide any explanations or other data.'
+Create a chartjs.org chart of type ${typeOfChart} that would be appropriate for this data. Create a valid ChartJS config for this chart. Only return the valid JSON config. Don't use more than 5 colours. Make sure to avoid this error: Give the chart a relevant title, based on this title: ${naturalLanguageQuery}. Include a key in the config called "original_query" that contains: ${naturalLanguageQuery}. Include a key called "summary" that includes a summary of the findings of the data, relative to the original query and any recommendations. It should summarise the results. Don't say "The chart shows" in your summary.`,
+      system_prompt: 'You are a ChartJS config creator. You are looking at 10 results, based on an SQL query. You must only return valid JSON. Never provide any explanations or other data.'
     });
 
 

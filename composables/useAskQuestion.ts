@@ -12,6 +12,7 @@ export default function (tableColumns: Ref<{ column: string; type: string; }[]>,
   
   const questionToAsk = ref('');
   const isAskingQuestion = ref(false);
+  const isErrored = ref(false);
 
   const results = ref<{
     chartConfiguration: any;
@@ -26,6 +27,7 @@ export default function (tableColumns: Ref<{ column: string; type: string; }[]>,
   async function askQuestion() {
     try {
       isAskingQuestion.value = true;
+      isErrored.value = false;
 
       const { sqlQuery } = await client.runChain<typeof sqlQueryGenerator>('sql-query-generator',{
           tableName: tableName.value,
@@ -52,6 +54,8 @@ export default function (tableColumns: Ref<{ column: string; type: string; }[]>,
         nlQuery: questionToAsk.value
       }
     
+    } catch (e) {
+      isErrored.value = true;
     } finally {
       isAskingQuestion.value = false;
     }
@@ -61,6 +65,7 @@ export default function (tableColumns: Ref<{ column: string; type: string; }[]>,
     results,
     clearResults,
     isAskingQuestion,
+    isErrored,
     questionToAsk,
     askQuestion
   }

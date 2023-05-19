@@ -19,6 +19,7 @@ const {
     questionToAsk,
     clearResults,
     askQuestion,
+    isErrored,
 } = useAskQuestion(TABLE_COLUMNS, TABLE_NAME);
 </script>
 
@@ -142,34 +143,49 @@ const {
         <ul
             v-if="chartConfigs.length && !questionResults"
             v-auto-animate
-            class="p-6 max-w-screen-xl w-full h-full hide-scroll-bar grid grid-cols-2 gap-8"
+            class="p-6 w-full h-full hide-scroll-bar"
         >
-            <div class="col-span-2">
-                <h3 class="font-semibold text-xl mb-3">
-                    Here are the results! Any questions?
-                </h3>
-                <form @submit.prevent="() => askQuestion()">
-                    <input
-                        class="w-full p-3 text-lg border border-gray-300 rounded w-full focus:outline-none focus:border-indigo-600 transition-colors"
-                        placeholder="Type question..."
-                        v-model="questionToAsk"
-                        :disabled="isAskingQuestion"
-                    />
-                    <p class="text-xs text-gray-400 mt-1.5">
-                        {{
-                            isAskingQuestion
-                                ? 'Analysing your data...'
-                                : 'Press enter to ask...'
-                        }}
-                    </p>
-                </form>
-            </div>
-            <div
-                class="p-4 rounded-lg border border-gray-200"
-                v-for="(config, idx) in chartConfigs"
-                :key="idx"
-            >
-                <Chart :chart-config="config" />
+            <div class="flex flex-col max-w-screen-xl mx-auto">
+                <div class="w-full flex flex-col mb-8">
+                    <h3 class="font-semibold text-xl mb-3">
+                        Here are the results! Any questions?
+                    </h3>
+                    <form
+                        @submit.prevent="() => askQuestion()"
+                        class="flex flex-col"
+                    >
+                        <input
+                            class="w-full p-3 text-lg border border-gray-300 rounded w-full focus:outline-none focus:border-indigo-600 transition-colors"
+                            placeholder="Type question..."
+                            v-model="questionToAsk"
+                            :disabled="isAskingQuestion"
+                        />
+                        <p class="text-xs text-gray-400 mt-1.5">
+                            {{
+                                isAskingQuestion
+                                    ? 'Analysing your data...'
+                                    : 'Press enter to ask...'
+                            }}
+                        </p>
+
+                        <div
+                            v-if="isErrored"
+                            class="mt-4 rounded-lg bg-gray-100 px-3 py-1 font-medium self-start text-gray-800"
+                        >
+                            Unfortunately, I can't find a good answer to that
+                            question in this data. Try something else!
+                        </div>
+                    </form>
+                </div>
+                <div class="grid grid-cols-2 gap-8">
+                    <div
+                        class="p-4 rounded-lg border border-gray-200"
+                        v-for="(config, idx) in chartConfigs"
+                        :key="idx"
+                    >
+                        <Chart :chart-config="config" />
+                    </div>
+                </div>
             </div>
         </ul>
 
@@ -177,7 +193,7 @@ const {
             v-else-if="questionResults"
             class="p-6 max-w-screen-xl w-full h-full flex flex-col"
         >
-            <Chart :chart-config="questionResults.chartConfiguration" />
+            <Chart large :chart-config="questionResults.chartConfiguration" />
 
             <button
                 @click="clearResults"
