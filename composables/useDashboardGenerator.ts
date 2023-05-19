@@ -5,8 +5,7 @@ import chartGenerator from '~/chains/chart-generator';
 import fixJson from '~/chains/fix-json';
 
 import { ChartConfiguration } from 'chart.js';
-import { PROJECT, REGION } from '~/relevance-config';
-import { TABLE_NAME, TABLE_COLUMNS } from '~/definitions';
+import { PROJECT, REGION } from '~/demo-config';
 
 export default function () {
 
@@ -16,6 +15,22 @@ export default function () {
     });
 
     const naturalLanguageQueries = ref<string[]>([]);
+
+    const {
+        data: databaseSchema,
+        pending: isDatabaseSchemaPending,
+    } = useFetch('/api/schema', {
+        method: 'GET',
+    });
+
+    const TABLE_NAME = ref<string>(databaseSchema?.value?.[0]?.name ?? '');
+    const TABLE_COLUMNS = computed(() => databaseSchema.value?.find(t => t.name === TABLE_NAME.value)?.fields.map(field => {
+        const parsed = JSON.parse(JSON.stringify(field));
+        return {
+            column: parsed.name,
+            type: parsed.type
+        }
+    }) ?? []);
 
     // for frontend effect
     const staggeredUiQueries = ref<string[]>([]);
@@ -39,10 +54,12 @@ export default function () {
             isLoading.value = true;
             hasStarted.value = true;
 
+            if (!databaseSchema.value?.[0]?.name) return;           
+
             /** NATURAL LANGUAGE QUERIES */
-            const { queries } = await client.runChain<typeof nlQueryGenerator>('nl-query-generator',{
-                tableName: TABLE_NAME,
-                tableColumns: TABLE_COLUMNS,
+            const { queries } = await client.runChain<typeof nlQueryGenerator>('nl-query-generator', {
+                tableName: TABLE_NAME.value,
+                tableColumns: TABLE_COLUMNS.value,
                 amountToGenerate: 10,
             });
 
@@ -52,8 +69,8 @@ export default function () {
             for (const query of naturalLanguageQueries.value) {
                 try {
                     const { sqlQuery } = await client.runChain<typeof sqlQueryGenerator>('sql-query-generator',{
-                    tableName: TABLE_NAME,
-                    tableColumns: TABLE_COLUMNS,
+                    tableName: TABLE_NAME.value,
+                    tableColumns: TABLE_COLUMNS.value,
                     naturalLanguageQuery: query
                 });
                 
@@ -116,7 +133,7 @@ export default function () {
                         return JSON.parse(promise.value.chartConfiguration) as ChartConfiguration;
                     }
                 } catch (e) {
-                    if (promise.status === 'fulfilled') {
+                    if (promise.status === 'fulfilled' && !!promise.value.chartConfiguration?.length) {
                         // push to our chain that tries to fix broken json
                         brokenJson.push(promise.value.chartConfiguration);
                     }
@@ -157,6 +174,10 @@ export default function () {
     }
 
     return {
+        TABLE_NAME,
+        TABLE_COLUMNS,
+        databaseSchema,
+        isDatabaseSchemaPending,
         hasStarted,
         isLoading,
         isLoadingCharts,

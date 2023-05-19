@@ -8,13 +8,26 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model PurchaseHistory {
-  id             Int      @id @default(autoincrement())
-  user_id        String   @db.VarChar(255)
-  gender         String   @db.VarChar(255)
-  location       String   @db.VarChar(255)
-  age            Int      @db.Int
-  purchase_value Float    @db.Float
-  total_spend    Float    @db.Float
-  purchase_date  DateTime @db.DateTime
+model Purchases {
+  id               Int      @id @default(autoincrement())
+  user_id          String   @db.VarChar(255)
+  gender           String   @db.VarChar(255)
+  location         String   @db.VarChar(255)
+  age              Int      @db.Int
+  purchase_value   Float    @db.Float
+  purchase_date    DateTime @db.DateTime
+  product_name     String   @db.VarChar(255)
+  product_material String   @db.VarChar(255)
+  product_tag      String   @db.VarChar(255)
+}
+
+model EmployeeSatisfaction {
+  id              Int    @id @default(autoincrement())
+  employee_id     String @db.VarChar(255)
+  gender          String @db.VarChar(255)
+  age             Int    @db.Int
+  happiness_value Float  @db.Float
+  job_title       String @db.VarChar(255)
+  job_type        String @db.VarChar(255)
+  job_area        String @db.VarChar(255)
 }

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import writingAnimation from '~/lottie/man-writing.json';
-
 const {
+    TABLE_NAME,
+    databaseSchema,
+    isDatabaseSchemaPending,
     hasStarted,
     isLoadingCharts,
     naturalLanguageQueries,
@@ -21,9 +23,9 @@ const {
                 Magic dashboard demo
             </h1>
             <div class="flex flex-col space-y-5 mt-1.5">
-                <p>
-                    In this proof of concept, I've whipped up an auto-generating
-                    dashboard using an LLM powered backend.
+                <p class="leading-7">
+                    I've built an LLM powered business analyst to analyse your
+                    SQL and generate a dashboard.
                 </p>
 
                 <ol
@@ -36,11 +38,25 @@ const {
                 </ol>
             </div>
 
+            <div class="mt-6 flex w-full">
+                <select
+                    name="database-select"
+                    class="w-full p-3 border border-gray-300 rounded w-full focus:outline-none focus:border-indigo-600 hover:bg-gray-50 transition-colors cursor-pointer"
+                    v-model="TABLE_NAME"
+                >
+                    <option disabled>Select database table...</option>
+                    <option v-for="table in databaseSchema" :value="table.name">
+                        {{ table.name }}
+                    </option>
+                </select>
+            </div>
+
             <button
                 @click="generateDashboard"
-                class="mt-6 p-3 rounded-md bg-gray-900 hover:bg-gray-800 hover:text-white transition-colors shadow-sm shadow-indigo-100 text-indigo-50 font-semibold"
+                :disabled="isDatabaseSchemaPending"
+                class="mt-6 p-3 rounded-md bg-gray-900 disabled:bg-indigo-700 hover:bg-gray-800 hover:text-white transition-colors shadow-sm shadow-indigo-100 text-indigo-50 font-semibold"
             >
-                Run query
+                Wake up the AI business analyst
             </button>
         </div>
 
@@ -152,5 +168,11 @@ const {
     width: 0;
     height: 0;
     display: none;
+}
+
+select {
+    -moz-appearance: none; /* Firefox */
+    -webkit-appearance: none; /* Safari and Chrome */
+    appearance: none;
 }
 </style>

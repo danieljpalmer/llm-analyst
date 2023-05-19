@@ -20,7 +20,7 @@ export default defineChain({
     const { answer: typeOfChart } = step('prompt_completion', {
       prompt: `The user has requested this data: "${naturalLanguageQuery}". These are the types of charts you know how to create: 'bar', 'doughnut', 'line', 'bubble' and 'radar'. This is what the data looks like: ${results[0]}. 
 
-Identify and respond with the type of chart that would be most appropriate for this request. If you can't think of anything, return with 'bar'.`
+Identify and respond with the type of chart that would be most appropriate for this request.`
     });
 
     const {

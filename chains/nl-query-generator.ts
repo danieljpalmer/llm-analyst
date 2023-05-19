@@ -41,11 +41,12 @@ export default defineChain({
 ${joinedColumns}.
 
 Give me a JSON array of the top ${amountToGenerate} questions you might want to ask of this table. They should be about varying topics. They shouldn't be answerable with only one thing.`,
+
       system_prompt: `You are a business analyst. You must respond with good questions to ask of your SQL database. You should respond with ${amountToGenerate} options always. You should respond in the format: [question].`
     });
     
     const { transformed: arrayQueries } = code({ queriesString }, ({ queriesString }) => {
-      let queries = ['Who is spending the most money?'];
+      let queries = [];
       try {
        queries = JSON.parse(queriesString);
       } catch (e) { };
