@@ -43,7 +43,7 @@ export default defineChain({
 
     const { answer: rawQuery } = step('prompt_completion', {
       prompt: `${preface} "${relevantQuerySection}". Identify and respond with the SQL query that would satisfy this request. Don't include any explanation of the query, just the query itself. Limit the page size to 10 records. Don't use as a name that is already a column name.`,
-      system_prompt: 'You must only return valid SQL. Never provide any explanations or other data.'
+      system_prompt: 'You must only return valid SQL. Never provide any explanations or other data.',
     });
 
     const { transformed: sqlQuery } = code({ rawQuery }, ({ rawQuery }) => {

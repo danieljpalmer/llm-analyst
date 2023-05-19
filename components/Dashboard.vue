@@ -2,6 +2,7 @@
 import writingAnimation from '~/lottie/man-writing.json';
 const {
     TABLE_NAME,
+    TABLE_COLUMNS,
     databaseSchema,
     isDatabaseSchemaPending,
     hasStarted,
@@ -11,6 +12,14 @@ const {
     chartConfigs,
     generateDashboard,
 } = useDashboardGenerator();
+
+const {
+    results: questionResults,
+    isAskingQuestion,
+    questionToAsk,
+    clearResults,
+    askQuestion,
+} = useAskQuestion(TABLE_COLUMNS, TABLE_NAME);
 </script>
 
 <template>
@@ -131,10 +140,30 @@ const {
         </div>
 
         <ul
-            v-if="chartConfigs.length"
+            v-if="chartConfigs.length && !questionResults"
             v-auto-animate
             class="p-6 max-w-screen-xl w-full h-full hide-scroll-bar grid grid-cols-2 gap-8"
         >
+            <div class="col-span-2">
+                <h3 class="font-semibold text-xl mb-3">
+                    Here are the results! Any questions?
+                </h3>
+                <form @submit.prevent="() => askQuestion()">
+                    <input
+                        class="w-full p-3 text-lg border border-gray-300 rounded w-full focus:outline-none focus:border-indigo-600 transition-colors"
+                        placeholder="Type question..."
+                        v-model="questionToAsk"
+                        :disabled="isAskingQuestion"
+                    />
+                    <p class="text-xs text-gray-400 mt-1.5">
+                        {{
+                            isAskingQuestion
+                                ? 'Analysing your data...'
+                                : 'Press enter to ask...'
+                        }}
+                    </p>
+                </form>
+            </div>
             <div
                 class="p-4 rounded-lg border border-gray-200"
                 v-for="(config, idx) in chartConfigs"
@@ -143,6 +172,31 @@ const {
                 <Chart :chart-config="config" />
             </div>
         </ul>
+
+        <div
+            v-else-if="questionResults"
+            class="p-6 max-w-screen-xl w-full h-full flex flex-col"
+        >
+            <Chart :chart-config="questionResults.chartConfiguration" />
+
+            <button
+                @click="clearResults"
+                class="p-1.5 px-2 rounded border border-gray-200 mx-auto font-medium text-sm mt-6 mx-auto flex items-center"
+            >
+                <svg
+                    class="w-3 h-3 mr-2 text-gray-400"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 100 100"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M17.07 6c-.52 0-1.02.21-1.39.59l-9.1 9.1a2 2 0 0 0 0 2.82L38.09 50 6.58 81.5a2 2 0 0 0 0 2.83l9.1 9.1a2 2 0 0 0 2.83 0L50 61.91l31.5 31.5a2 2 0 0 0 2.83 0l9.1-9.1a2 2 0 0 0 0-2.83l-31.5-31.5 31.5-31.47a2 2 0 0 0 0-2.84l-9.1-9.1a2 2 0 0 0-2.83 0l-31.5 31.5-31.47-31.5A2 2 0 0 0 17.06 6z"
+                    />
+                </svg>
+                Close chart
+            </button>
+        </div>
     </div>
 </template>
 

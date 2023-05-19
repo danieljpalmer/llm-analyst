@@ -2,7 +2,6 @@ import { Client } from '@relevanceai/chain';
 import nlQueryGenerator from '~/chains/nl-query-generator';
 import sqlQueryGenerator from '~/chains/sql-query-generator';
 import chartGenerator from '~/chains/chart-generator';
-import fixJson from '~/chains/fix-json';
 
 import { ChartConfiguration } from 'chart.js';
 import { PROJECT, REGION } from '~/demo-config';
@@ -101,8 +100,6 @@ export default function () {
                             }
                         });
                         
-                        console.log('query data:', data.value, Math.random())
-
                     const { chartConfiguration } = await client.runChain<typeof chartGenerator>('chart-generator',{
                         results: data?.value as Record<any, any>[] ?? [],
                         naturalLanguageQuery: nlQuery
@@ -122,51 +119,22 @@ export default function () {
 
             const promises = sqlQueries.value.map(generateChart);
             const settledPromises = await Promise.allSettled(promises);
-
-            const brokenJson = [] as string[];
             
-            let charts = settledPromises.map((promise) => {
+            chartConfigs.value = settledPromises.map((promise) => {
                 try {
                     if (promise.status === 'rejected') {
                         return {} as ChartConfiguration;
                     } else {
                         return JSON.parse(promise.value.chartConfiguration) as ChartConfiguration;
                     }
-                } catch (e) {
-                    if (promise.status === 'fulfilled' && !!promise.value.chartConfiguration?.length) {
-                        // push to our chain that tries to fix broken json
-                        brokenJson.push(promise.value.chartConfiguration);
-                    }
-                    
+                } catch (e) {                    
                     return {} as ChartConfiguration;
                 }
             }).filter(config => !!config?.type);
-            
-            async function fixBrokenJson(broken: string) {
-                const { fixedJsonString } = await client.runChain<typeof fixJson>('fix-json',{
-                    brokenJsonString: broken
-                });
 
-                return JSON.parse(fixedJsonString);
-            }
-            
-            // sounds like it should be a Fall Out Boy album
-            const brokenPromises = brokenJson.map(fixBrokenJson);
-            
-            // poorly received follow up album
-            const settledBrokenPromises = await Promise.allSettled(brokenPromises);
-
-            chartConfigs.value = [...charts, ...settledBrokenPromises.map(result => {
-                if (result.status === 'fulfilled') {
-                    return result.value;
-                };
-
-                return null;
-            }).filter(r => !!r)];
             
         } catch (error) {
-            console.log('request error', error)
-            console.log(error);
+            console.error(error);
         } finally {
             isLoading.value = false;
             isLoadingCharts.value = false;

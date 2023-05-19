@@ -27,7 +27,7 @@ export default defineEventHandler(async () => {
         }
   };
 
-  function createEmployeeSatisfactionRecord {
+  function createEmployeeSatisfactionRecord() {
     return {
           employee_id: uuid(),
           gender: faker.person.sex(),

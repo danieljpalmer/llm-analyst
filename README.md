@@ -19,7 +19,7 @@ relevance login
 relevance deploy
 ```
 
-Finally, set up a [Planetscale database for free](https://planetscale.com/) and add a `.env` file with:
+Finally, set up an SQL database (I used a [Planetscale database for free](https://planetscale.com/)) and add a `.env` file with:
 
 ```
 DATABASE_HOST=
