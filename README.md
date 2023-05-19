@@ -1,6 +1,6 @@
 # Agent that dashboards like an analyst - Relevance AI
 
-Read our [guide](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Read our [guide](https://documentation.relevanceai.com/guides/charting-agent) to learn more.
 
 ## Setup
 
