@@ -13,7 +13,7 @@ Make sure to install the dependencies:
 npm install
 ```
 
-Then install the Relevance AI SDK, authenticate and deploy the chains.
+This uses Relevance AI to deploy and run the LLM chains. Then install the Relevance AI SDK, authenticate and deploy the chains. Docs for Relevance AI.
 
 ```bash
 npm install @relevanceai/chain -g
@@ -21,7 +21,9 @@ relevance login
 relevance deploy
 ```
 
-Add your Relevance region and project to the `demo-config.ts` file to power the frontend chain client.
+`relevance deploy` will deploy the chains in this repo into hosted APIs that the frontend chain client can run. Note, you will have to add your LLM (such as Open AI) key into Relevance - you can run `relevance keys` to bring up the page to do this.
+
+Also add your Relevance region and project to the `demo-config.ts` file to power the frontend chain client.
 
 ```
 export const REGION = '';
