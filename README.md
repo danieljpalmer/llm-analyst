@@ -1,6 +1,8 @@
-# Agent that dashboards like an analyst - Relevance AI
+# Friendly LLM agent that dashboards like an analyst
 
-Read our [guide](https://documentation.relevanceai.com/guides/charting-agent) to learn more.
+This works on any SQL database! You might need to play with the prompts in the `chains` folder to get it working best for your use case. The world is your oyster!
+
+Read about [how this works](https://documentation.relevanceai.com/guides/charting-agent).
 
 ## Setup
 
@@ -17,6 +19,13 @@ Then install the Relevance AI SDK, authenticate and deploy the chains.
 npm install @relevanceai/chain -g
 relevance login
 relevance deploy
+```
+
+Add your Relevance region and project to the `demo-config.ts` file to power the frontend chain client.
+
+```
+export const REGION = '';
+export const PROJECT = '';
 ```
 
 Finally, set up an SQL database (I used a [Planetscale database for free](https://planetscale.com/)) and add a `.env` file with:
