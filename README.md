@@ -2,7 +2,7 @@
 
 This works on any SQL database! You might need to play with the prompts in the `chains` folder to get it working best for your use case. The world is your oyster!
 
-Read about [how this works](https://documentation.relevanceai.com/guides/charting-agent).
+I wrote a guide about [how it works](https://documentation.relevanceai.com/guides/charting-agent) on my company blog.
 
 ## Setup
 
@@ -13,7 +13,7 @@ Make sure to install the dependencies:
 npm install
 ```
 
-This uses Relevance AI to deploy and run the LLM chains. Then install the Relevance AI SDK, authenticate and deploy the chains. Docs for Relevance AI.
+This uses Relevance AI to deploy and run the LLM chains. Then install the Relevance AI SDK, authenticate and deploy the chains. [Docs for Relevance AI](https://documentation.relevanceai.com).
 
 ```bash
 npm install @relevanceai/chain -g
