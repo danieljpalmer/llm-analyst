@@ -4,6 +4,8 @@ This works on any SQL database! You might need to play with the prompts in the `
 
 I wrote a guide about [how it works](https://documentation.relevanceai.com/guides/charting-agent) on my company blog.
 
+https://github.com/bartvdbraak/llm-analyst/assets/3996360/21327653-723a-4742-aee0-b71d64e33725
+
 ## Setup
 
 Make sure to install the dependencies:
